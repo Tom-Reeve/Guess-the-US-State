@@ -372,7 +372,7 @@
                 
                 if (distance_from_answer == 0) {
                     dropdown.disabled = true;
-                    new_cell_bearing_from_answer.innerHTML = "✅"; //if the answer is correct, the arrow is repalced with a tick
+                    new_cell_bearing_from_answer.innerHTML = "✅"; //if the answer is correct, the arrow is repalced with a tick and the default bearing is 0
                     restart_button.style.visibility = "visible";
                 }
             }
