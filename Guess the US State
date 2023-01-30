@@ -342,7 +342,7 @@
                 guessed_state = guessed_state.replace(" " , "_"); //replaces spaces in state names with underscores, to match how they are defined in the key
                 
                 let guessed_index = state_key_list.indexOf(guessed_state); 
-                dropdown[guessed_index + 1].disabled = true;                    //disables the chosen option to stop if being chosen again
+                dropdown[guessed_index + 1].disabled = true;                    //disables the chosen option to stop it being chosen again
                 
                 guessed_latitude = states[state_key_list[guessed_index]].latitude; //latitude and longitude of the state that has been guessed
                 guessed_longitude = states[state_key_list[guessed_index]].longitude;
