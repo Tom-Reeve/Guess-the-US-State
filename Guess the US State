@@ -17,6 +17,7 @@
                 width: 100%;
                 margin-top: 15px;
                 text-align: center;
+                z-index: 2;
             }
             #results_table_wrapper {
                 width: 100%;
@@ -27,10 +28,18 @@
                 border-spacing: 0 1em;
                 text-align: center;
             }
+            #canvas {
+                position: absolute;
+                z-index: 1;
+                width: 98%;
+                height: 80%;
+                margin-top: 175px;
+            }
         </style>
         <title>Guess the US State</title>
     </head>
     <body>
+        <canvas id="canvas"></canvas>
         <div id="title">Guess The US State</div>
         <div id="input_container">
             <select name="states_dropdown" id="states_dropdown" onchange="SubmitGuess()"> 
@@ -307,6 +316,15 @@
             let state_to_guess, state_latitude, state_longitude;        //initating random state variables
             let guessed_state, guess_number, distance_from_answer, bearing_from_answer, guessed_latitude, guessed_longitude;            //initiating user guess variables
             
+            let canvas = document.getElementById("canvas");
+            let ctx = canvas.getContext("2d");
+            let width = window.innerWidth;
+            let height = window.innerHeight;
+            let particles = []; 
+            let max_particles = 1000;
+            let angle = 0;
+            let interval = 0;
+            
             let dropdown = document.getElementById("states_dropdown");
             let restart_button = document.getElementById("restart_button");
             let results_table = document.getElementById("results_table");
@@ -327,13 +345,15 @@
                 let table_header_row = 1;
                 let table_row_count = results_table.rows.length;
                 for (let i = table_header_row ; i < table_row_count ; i++) {
-                    results_table.deleteRow(table_header_row);                  //deletes all rows of the table
+                    results_table.deleteRow(table_header_row);                  //deletes all rows of the table from the previous game
                 }
                 
                 let random_index = Math.floor(Math.random() * state_key_list.length); //generates a random number
                 state_to_guess = state_key_list[random_index];                        //uses the random number to generate a random state
                 state_latitude = states[state_key_list[random_index]].latitude;       //gets the latitude of the random state
                 state_longitude = states[state_key_list[random_index]].longitude;     //gets the longitude of the random state
+                
+                ConfettiSetup();
             }
             Init();
             
@@ -374,6 +394,7 @@
                     dropdown.disabled = true;
                     new_cell_bearing_from_answer.innerHTML = "✅"; //if the answer is correct, the arrow is repalced with a tick and the default bearing is 0
                     restart_button.style.visibility = "visible";
+                    StartConfetti();
                 }
             }
             
@@ -417,6 +438,60 @@
                 bearing = Math.ceil(bearing / 45) * 45;
                 bearing = (bearing + 360) % 360;
                 return bearing;
+            }
+            
+            function ConfettiSetup() { //https://stackoverflow.com/questions/33629579/javascript-confetti-blast-effect
+                for (let i = 0 ; i < max_particles ; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        r: Math.random() * 8 + 1,
+                        d: Math.random() * max_particles * 15,
+                        c: "rgb(" + Math.floor((Math.random() * 255)) + ", " + Math.floor((Math.random() * 255)) + ", " + Math.floor((Math.random() * 255)) + ", 0.8)",
+                        t: Math.floor(Math.random() * 5) - 5
+                    });
+                }
+                clearInterval(interval);
+                ctx.clearRect(0, 0, width, height);
+            }
+            
+            function Draw() {
+                ctx.clearRect(0, 0, width, height);
+                for (let i = 0 ; i < max_particles ; i++) {
+                    let p = particles[i];
+                    ctx.beginPath();
+                    ctx.lineWidth = p.r;
+                    ctx.strokeStyle = p.c;
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p.x + p.t + p.r / 2, p.y + p.t);
+                    ctx.stroke();
+                }
+                Update();
+            }
+            
+            function Update() {
+                angle += 0.01;
+                for (let i = 0 ; i < max_particles ; i++) {
+                    let p = particles[i];
+                    p.y += Math.cos(angle + p.d) + 1 + p.r / 2;
+                    p.x += Math.sin(angle) * 2;
+                    if (p.x > width + 5 || p.x < -5 || p.y > height) {
+                        if (i % 3 > 0) {
+                            particles[i] = {
+                                x: Math.random() * width,
+                                y: -10,
+                                r: p.r,
+                                d: p.d,
+                                c: p.c,
+                                t: p.t
+                            };
+                        }
+                    }
+                }
+            }
+            
+            function StartConfetti() {
+                interval = setInterval(Draw, 20);
             }
         </script>
     </body>
