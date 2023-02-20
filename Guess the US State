@@ -32,7 +32,7 @@
                 position: absolute;
                 z-index: 1;
                 width: 98%;
-                height: 80%;
+                height: 75%;
                 margin-top: 175px;
             }
         </style>
@@ -325,6 +325,8 @@
             let angle = 0;
             let interval = 0;
             
+            let audio = new Audio("Success Trumpet.mp3"); 
+            
             let dropdown = document.getElementById("states_dropdown");
             let restart_button = document.getElementById("restart_button");
             let results_table = document.getElementById("results_table");
@@ -333,6 +335,9 @@
             
             function Init() {
                 guess_number = 0;
+                
+                audio.pause();
+                audio.currentTime = 0;
                 
                 dropdown.value = "";
                 dropdown.disabled = false;                      //makes sure all dropdowns can be selected
@@ -395,6 +400,7 @@
                     new_cell_bearing_from_answer.innerHTML = "✅"; //if the answer is correct, the arrow is repalced with a tick and the default bearing is 0
                     restart_button.style.visibility = "visible";
                     StartConfetti();
+                    audio.play();
                 }
             }
             
